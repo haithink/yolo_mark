@@ -39,6 +39,8 @@
 #define CV_FILLED cv::FILLED
 #endif
 
+#define OPENCV
+#include "yolo_v2_class.hpp"    // imported functions from DLL
 
 using namespace cv;
 
@@ -256,6 +258,12 @@ protected:
 
 int main(int argc, char *argv[])
 {
+	std::string  names_file = "data\\coco.names";
+	std::string  cfg_file = "cfg\\yolov3.cfg";
+	std::string  weights_file = "yolov3.weights";
+
+	Detector detector(cfg_file, weights_file);
+
 
 	try
 	{
@@ -336,6 +344,9 @@ int main(int argc, char *argv[])
 		cv::String images_path_cv = images_path;
 		std::vector<cv::String> filenames_in_folder_cv;
 		glob(images_path_cv, filenames_in_folder_cv); // void glob(String pattern, std::vector<String>& result, bool recursive = false);
+
+		std::cout << " filenames_in_folder_cv size " << filenames_in_folder_cv.size() << std::endl;
+		std::cout << " filenames_in_folder_cv 0 " << filenames_in_folder_cv[0] << std::endl;
 		for (auto &i : filenames_in_folder_cv) 
 			filenames_in_folder.push_back(i);
 
@@ -555,6 +566,8 @@ int main(int argc, char *argv[])
 						}
 					}
 					catch (...) { std::cout << " Exception when try to write txt-file \n"; }
+
+
 				}
 
 				// show preview images
@@ -576,12 +589,16 @@ int main(int argc, char *argv[])
 
 					if (i == 0)
 					{
+						// 应该在这里 使用 YOLO 对图像进行检测， 然后 将结果插入到 current_coord_vec
+						// 注意， 转为相对坐标 ， 以及 x,y 是 box 中心坐标
                         optflow_img = img;
 						resize(img, full_image, full_rect_dst.size());
 						full_image.copyTo(full_image_roi);
 						current_img_size = img.size();
 
 						try {
+							// 解析滑动条 对应的第一张图片 对应的 坐标文本文件
+							// 坐标保存到 current_coord_vec 中
 							std::string const jpg_filename = jpg_filenames[trackbar_value];
 							std::string const txt_filename = jpg_filename.substr(0, jpg_filename.find_last_of(".")) + ".txt";
 							//std::cout << (images_path + "/" + txt_filename) << std::endl;
@@ -612,6 +629,25 @@ int main(int argc, char *argv[])
 							}
 						}
 						catch (...) { std::cout << " Exception when try to read txt-file \n"; }
+
+						if (current_coord_vec.empty())
+						{
+							std::vector<bbox_t> result_vec = detector.detect(img);
+							std::cout << "have detected " << result_vec.size() << std::endl;
+							for (auto box : result_vec)
+							{
+								coord_t coord;
+
+								coord.id = box.obj_id;
+								coord.abs_rect.x = box.x / (float)img.cols * (float)full_image_roi.cols;
+								coord.abs_rect.y = box.y / (float)img.rows * (float)full_image_roi.rows;
+								coord.abs_rect.width = box.w / (float)img.cols * (float)full_image_roi.cols;
+								coord.abs_rect.height = box.h / (float)img.rows * (float)full_image_roi.rows;;
+
+								current_coord_vec.push_back(coord);
+							}
+						}
+
 					}
 
 					std::string const jpg_filename = jpg_filenames[trackbar_value + i];
@@ -687,6 +723,9 @@ int main(int argc, char *argv[])
 					coord_t coord;
 					coord.abs_rect = selected_rect;
 					coord.id = current_obj_id;
+
+					// 除了 从文本文件读取坐标 插入 current_coord_vec
+					// 就只有这个地方插入了，如果使用 YOLO 进行检测，那么应该直接插入这个 vector
 					current_coord_vec.push_back(coord);
 
 					marks_changed = true;
