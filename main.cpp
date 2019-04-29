@@ -1030,6 +1030,16 @@ int main(int argc, char *argv[])
             case 1048690:   // r
                 delete_selected = true;
                 break;
+			case 'a':
+				{
+					current_obj_id = (current_obj_id+1) % (max_object_id+1);
+					current_coord_vec[selected_id].id = current_obj_id;
+				}
+				break;
+			case 'd':
+				current_obj_id = (current_obj_id == 0 ? max_object_id : current_obj_id - 1);
+				current_coord_vec[selected_id].id = current_obj_id;
+				break;
 			default:
 				;
 			}
