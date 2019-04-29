@@ -505,7 +505,7 @@ int main(int argc, char *argv[])
 
 		int old_current_obj_id = -1, current_obj_id = 0;
 		std::string const trackbar_name_2 = "object id";
-		int const max_object_id = (synset_txt.size() > 0) ? synset_txt.size() : 20;
+		int const max_object_id = (synset_txt.size() > 0) ? synset_txt.size()-1 : 20;
 		int tb_res_2 = createTrackbar(trackbar_name_2, window_name, &current_obj_id, max_object_id);
 
 
