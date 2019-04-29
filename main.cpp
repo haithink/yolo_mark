@@ -636,15 +636,19 @@ int main(int argc, char *argv[])
 							std::cout << "have detected " << result_vec.size() << std::endl;
 							for (auto box : result_vec)
 							{
-								coord_t coord;
+								if (box.obj_id == 9)
+								{
+									coord_t coord;
 
-								coord.id = box.obj_id;
-								coord.abs_rect.x = box.x / (float)img.cols * (float)full_image_roi.cols;
-								coord.abs_rect.y = box.y / (float)img.rows * (float)full_image_roi.rows;
-								coord.abs_rect.width = box.w / (float)img.cols * (float)full_image_roi.cols;
-								coord.abs_rect.height = box.h / (float)img.rows * (float)full_image_roi.rows;;
+									coord.id = box.obj_id;
+									coord.abs_rect.x = box.x / (float)img.cols * (float)full_image_roi.cols;
+									coord.abs_rect.y = box.y / (float)img.rows * (float)full_image_roi.rows;
+									coord.abs_rect.width = box.w / (float)img.cols * (float)full_image_roi.cols;
+									coord.abs_rect.height = box.h / (float)img.rows * (float)full_image_roi.rows;;
 
-								current_coord_vec.push_back(coord);
+									current_coord_vec.push_back(coord);
+								}
+
 							}
 						}
 
