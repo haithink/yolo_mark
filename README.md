@@ -1,4 +1,6 @@
 # Yolo_mark
+这个工具还挺好使，支持不少快捷键。但是每次用鼠标拖框比较慢，干脆用 yolo 先生成一个框，能节约不少时间
+以下是 原始readMe
 **Windows** & **Linux** GUI for marking bounded boxes of objects in images for training Yolo v3 and v2
 
 * To compile on **Windows** open `yolo_mark.sln` in MSVS2013/2015, compile it **x64 & Release** and run the file: `x64/Release/yolo_mark.cmd`. Change paths in `yolo_mark.sln` to the OpenCV 2.x/3.x installed on your computer:
